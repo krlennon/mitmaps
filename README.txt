@@ -14,7 +14,7 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with MITMAPS.  If not, see <https://www.gnu.org/licenses/>.
 
-MITMAPS is an open-source software package developed for fast analysis of rheological data obtained using the MAPS protocol (see "Medium Amplitude Parallel Superposition Rheology, Part 2: Experimental Protocols and Data Analysis" by Kyle R. Lennon, Gareth H. McKinley, and James W. Swan). We hope to actively maintain this software at $$URL$$. If issues with the version of this software downloaded from the Supporting Information of the aforementioned paper are encountered, we encourage users to update to the latest version published on GitHub. Inquirites about the software can be directed to krlennon[at]mit.edu.
+MITMAPS is an open-source software package developed for fast analysis of rheological data obtained using the MAPS protocol (see "Medium Amplitude Parallel Superposition Rheology, Part 2: Experimental Protocols and Data Analysis" by Kyle R. Lennon, Gareth H. McKinley, and James W. Swan). We hope to actively maintain this software at <https://github.com/krlennon/mitmaps>. If issues with the version of this software downloaded from the Supporting Information of the aforementioned paper are encountered, we encourage users to update to the latest version published on GitHub. Inquirites about the software can be directed to krlennon[at]mit.edu.
 
 =============
 Compatibility
