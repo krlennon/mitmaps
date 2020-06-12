@@ -1,0 +1,109 @@
+Filename	saos_1
+Instrument name	5333-0052
+Operator	
+rundate	3/6/2020
+proceduresegments	Frequency sweep#Frequency sweep#Amplitude sweep#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave#Arbitrary Wave
+[File Parameters]
+Name	saos_1
+Instrument serial number	5333-0052
+Instrument name	5333-0052
+Company name	HML
+Trios version	4.5.0.42498
+Instrument firmware version	9.49
+Instrument type	Discovery HR-3
+Run date	3/6/2020 9:27:44 AM
+Time at start of test	0.281183
+File name	C:\ProgramData\TA Instruments\TRIOS\Data\User\Data\Kyle\2020-03-06\saos_1.tri
+Instrument location	NOT_SET
+[Instrument Options]
+ETC camera available	no
+Friction	0.303758 µN.m/(rad/s)
+Friction calibration date	2/14/2020 9:16:52 AM
+Friction correction enabled	yes
+Rotational mapping date	3/6/2020 9:16:32 AM
+Rotational mapping geometry	60mm 2° cone plate Al [987938] Smart Swap
+Rotational mapping number of iterations	2
+Rotational mapping type	standard
+Smart swap enabled	no
+[Temperature Options]
+Current temperature system compensation	0.600961 µm/°C
+Current temperature system offset	0.000 °C
+Current temperature system span	1.000
+Gap temperature compensation calibration date	7/13/2017 1:32:58 PM
+Gap temperature compensation enabled	yes
+Purge gas only (no active cooling)	no
+Temperature control enabled	yes
+Temperature system control	Peltier plate
+Upper temperature system fitted	no
+Temperature wait duration	00:00:10 hh:mm:ss
+Temperature wait tolerance	0.200000 °C
+[Inertia Options]
+Instrument inertia	20.6465 µN.m.s²
+Instrument inertia calibration date	3/6/2020 9:05:51 AM
+[Gap Options]
+Axial force for sample compression	1.00000 N
+Closure distance	1000.00 µm
+Closure profile	linear
+Closure velocity	500.000 µm/s
+Gap velocity (coarse)	6000.00 µm/s
+Gap velocity (fine)	1000.00 µm/s
+Gap velocity (other)	6000.00 µm/s
+Gap zero mode	standard (DHR) or deceleration (AR)
+Gap handling at start of test	Flag mismatches between geometry and instrument gap
+Gap tolerance	4.00000 µm
+Gap wait duration	00:00:02 hh:mm:ss
+Override wait for gap	no
+[Axial Force Control]
+Axial force action outside range	Return to initial value
+Control axial force active	no
+Control axial force max gap change up	1000.00 µm
+Control axial force min gap change down	1000.00 µm
+Control axial force sensitivity	0.100000 N
+Control axial force set initial value	no
+Control axial force type	Compression
+Controlled axial force	1.00000 N
+[Flow Options]
+Flow collect all points	no
+Flow collect negative shear rate data	yes
+Flow inertia correction	no
+Flow non-steady state minimum velocity	1.00000e-4 rad/s
+Flow torque limit	0.100000 µN.m
+Flow velocity limit	1.00000e-4 rad/s
+Flow velocity tolerance	5.00000 %
+Flow zero strain at start of step	yes
+[Oscillation Options]
+Oscillation displacement limit	1.00000e-5 rad
+Oscillation displacement tolerance	5.00000 %
+Oscillation raw phase limit	170.000 °
+Oscillation torque limit	0.100000 µN.m
+Oscillation torque tolerance	1.00000 %
+Oscillation velocity tolerance	5.00000 %
+[Conditioning Options]
+Zero axial force before run	no
+Zero speed after preshear	Leave as is
+Zero velocity threshold	0.100000 rad/s
+[Experiment all steps options]
+Maximum axial force limit	50.0000 N
+Minimum axial force limit	0.100000 N
+Temperature tolerance (results)	1.00000 °C
+[step]
+Frequency sweep - 1
+Storage modulus	Loss modulus	Tan(delta)	Angular frequency	Oscillation torque	Step time	Temperature	Raw phase	Oscillation displacement	Complex viscosity	Axial force	Oscillation stress	Time
+Pa	Pa		rad/s	µN.m	s	°C	°	rad	Pa.s	N	Pa	s
+43.3714	3.88842	0.0896538	100.000	5.64551	7.71996	25.001	178.462	2.39645e-5	0.435454	-0.0165104	0.0300129	7.71996
+41.8272	3.64171	0.0870654	63.0957	5.64887	14.5097	25.008	173.719	1.04355e-4	0.665425	-0.0116096	0.126012	14.5097
+40.9685	3.75379	0.0916262	39.8105	5.65011	21.1050	24.997	18.6102	2.95376e-4	1.03340	-0.0170856	0.349494	21.1050
+40.2437	4.24953	0.105595	25.1188	5.65245	27.4942	24.990	8.51772	1.21148e-4	1.61104	-0.0158522	0.141001	27.4942
+39.5078	5.33639	0.135072	15.8490	5.65335	34.1181	24.998	8.72183	9.87836e-5	2.51540	-0.0164950	0.113265	34.1181
+38.4656	7.14986	0.185877	10.0001	5.65390	40.2596	25.000	11.0572	9.32596e-5	3.91242	-0.0187219	0.104941	40.2596
+36.6545	9.94688	0.271369	6.30957	5.65424	46.7267	25.000	15.4829	9.33107e-5	6.01944	-0.0173764	0.101928	46.7267
+33.5357	13.3701	0.398683	3.98105	5.65445	52.1858	25.000	21.9110	9.70428e-5	9.06864	-0.0173405	0.100765	52.1858
+28.1469	16.8410	0.598326	2.51189	5.65458	57.9184	25.001	30.9975	1.06325e-4	13.0581	-0.0159401	0.100306	57.9184
+20.5280	18.6548	0.908746	1.58490	5.65467	66.6499	24.999	42.3259	1.25497e-4	17.5015	-0.0168581	0.100123	66.6499
+12.6670	17.4989	1.38146	1.00000	5.65472	79.8148	24.995	54.1381	1.61019e-4	21.6024	-0.0167049	0.100048	79.8148
+6.51221	13.9765	2.14620	0.630957	5.65476	100.431	25.004	65.0405	2.25518e-4	24.4378	-0.0156010	0.100019	100.431
+2.96829	9.94623	3.35083	0.398107	5.65478	132.712	25.001	73.3974	3.34967e-4	26.0727	-0.0176480	0.100007	132.712
+1.24347	6.59132	5.30075	0.251189	5.65479	183.526	25.004	79.3256	5.18320e-4	26.7034	-0.0161667	0.100002	183.526
+0.504901	4.24083	8.39934	0.158490	5.65480	263.486	24.990	83.2162	8.14044e-4	26.9468	-0.0155231	0.100000	263.486
+0.202351	2.68770	13.2824	0.100000	5.65480	389.759	25.000	85.6980	1.28986e-3	26.9530	-0.0133981	0.0999993	389.759
+
