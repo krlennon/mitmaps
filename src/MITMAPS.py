@@ -29,31 +29,32 @@ import sys
 
 # Select "experimental" mode for experimental data analysis, or "simulation" mode for model predictions/simulations only
 # Note that simulations are only conducted in strain control (MAPS_control will be set to "strain" by default)
-mode = "simulation"
+mode = "experimental"
 
 # Linear response
-LR_file = "Examples/saos.txt" # Path to file with linear response data (set to None to skip)
+LR_file = "../Example Data/xanthan_saos.txt" # Path to file with linear response data (set to None to skip)
+LR_fit = "interp3" # Fitting method for LR data ("Maxwell" or "linear_int")
 
 # Experimental mode (either "stress" or "strain")
 MAPS_control = "stress"
 
 # MAPS response
-MAPS_folder = "Examples/MAPS Data" # Path to folder with MAPS data
-MAPS_tones = [[5,6,9],[1,4,16]] # Input tone sets for MAPS signals
-MAPS_freqs = [1.28, 0.64, 0.32, 0.16] # Fundamental frequencies in the MAPS sweeps
+MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
+MAPS_tones = [[1,4,16]] # Input tone sets for MAPS signals
+MAPS_freqs = [1.28] # Fundamental frequencies in the MAPS sweeps
 sort_order = "amplitude" # Outer sorted variable ("amplitude" or "frequency")
 plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
 
 # Constitutive models
-full_model = crm # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
-maps_models = [crm_J3,giesekus_J3] # MAPS model to plot (specific to MAPS response function)
-extra_params = [0.5] # Parameters in addition to those regressed from LVE response
+full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
+maps_models = [tss_J3] # MAPS model to plot (specific to MAPS response function)
+extra_params = [-0.5] # Parameters in addition to those regressed from LVE response
 
 # Additional options
-plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
+plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
 outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
-tssComp = False # Choose whether to run a TSS comparison
+tssComp = True # Choose whether to run a TSS comparison
 
 ###################################
 ## EDITS BELOW HERE ARE OPTIONAL ##
@@ -81,22 +82,38 @@ if LR_file != None:
     LR_exp_types, LR_exp_data = readfile(LR_file)
     LR_data = getLR(LR_exp_data, LR_exp_types)
     sys.stdout.write("\rProcessing linear response data ... done\n")
-    sys.stdout.write("\rFitting linear response data ...")
-    eta0, lam, etainf = fitLR(LR_data)
-    sys.stdout.write("\rFitting linear response data ... done\n")
 
-    # Set the model parameters to include the linear response parameters
-    params = [eta0,lam,etainf] + extra_params
+    # Fit the LR data to a single-mode Maxwell model
+    if LR_fit == "Maxwell":
+        sys.stdout.write("\rFitting linear response data ...")
+        eta0, lam, etainf = fitLR(LR_data)
+        LR_model = lambda w: maxwellLR(w,[eta0,lam,etainf])
+        sys.stdout.write("\rFitting linear response data ... done\n")
+
+        # Set the model parameters to include the linear response parameters
+        params = [eta0,lam,etainf] + extra_params
+
+    # Fit the LR data to kth order splines
+    elif "interp" in LR_fit:
+        LR_model = interpolateLR(LR_data,int(LR_fit[6]))
+
+    # If maps_model is tss, set LR_model
+    if tss_eta3 in maps_models:
+        ind = maps_models.index(tss_eta3)
+        maps_models[ind] = lambda w1,w2,w3,params: params[0]*tss_eta3(w1,w2,w3,LR_model)
+    elif tss_J3 in maps_models:
+        ind = maps_models.index(tss_J3)
+        maps_models[ind] = lambda w1,w2,w3,params: params[0]*tss_J3(w1,w2,w3,LR_model)
 
     # Plot linear response data if specified
     if plotLR:
-        plot_linear_response(LR_data,maxwellLR,[eta0,lam,etainf])
+        plot_linear_response(LR_data,LR_model)
 
     # Plot gap loading limit analysis if specified
     if gapLoading:
         wmin = np.min(MAPS_freqs)
         wmax = 3*np.max(np.max(np.array(MAPS_tones)))*np.max(MAPS_freqs)
-        gap_loading(maxwellLR,[eta0,lam,etainf],1000,[wmin,wmax])
+        gap_loading(LR_model,1000,[wmin,wmax])
 
 # Input the MAPS data in "data" mode
 if mode == "experimental" and MAPS_folder != None:
@@ -137,15 +154,15 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
 
         # Convert between stress and strain control (requires LR data)
         if LR_file != None:
-            experiment.interconvert(eta0, lam, etainf)
+            experiment.interconvert(LR_model)
 
     # If TSS comparison is selected, make the plot
     if tssComp:
-        tss_comparison(experiments,maxwellLR,[eta0,lam,etainf])
+        tss_comparison(experiments,LR_model)
 
     # Set overlap to 1 and display messages
     overlap = 1
-    if mode == "data":
+    if mode == "experimental":
         sys.stdout.write("\rProcessing MAPS data ... done\n")
     elif mode == "simulation":
         sys.stdout.write("\rSimulating MAPS experiments ... done\n")
@@ -197,8 +214,9 @@ else:
 # (1) or make a separate figure (0)
 
 # First set the minimum and maximum frequency to consider
-wmin = np.min(MAPS_freqs)/10
-wmax = np.max(MAPS_freqs)*10
+all_tones = [tone for tone_set in MAPS_tones for tone in tone_set]
+wmin = np.min(MAPS_freqs)
+wmax = np.max(MAPS_freqs)
 
 # Plot model predictions for each figure object
 if maps_models != None:

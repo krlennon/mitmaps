@@ -21,7 +21,8 @@ import numpy as np
 from itertools import permutations
 import matplotlib.pyplot as plt
 from scipy.optimize import fmin, curve_fit, least_squares
-import timeit
+from scipy.interpolate import interp1d as interp
+import sys
 
 class MAPSExperiment:
     """
@@ -267,12 +268,12 @@ class StrainControlled(MAPSExperiment):
     def __init__(self, fundamental, harmonics, *args):
         super().__init__(fundamental, harmonics, *args)
 
-    def interconvert(self, eta0, lam, etainf):
+    def interconvert(self, lrmodel):
         """
         Convert from the complex modulus to the complex compliance
         """
         self.J1 = np.array([1/g1 for g1 in self.G1])
-        self.J3 = np.array([G3_to_J3(self.G3[i], self.base, self.mapscoords[i], eta0, lam, etainf)
+        self.J3 = np.array([G3_to_J3(self.G3[i], self.base, self.mapscoords[i], lrmodel)
             for i in range(0,len(self.G3))])
         self.J3_var = (np.abs(np.real(self.G3_var)*(np.real(self.J3)/np.real(self.G3))**2) +
                 1j*np.abs(np.imag(self.G3_var)*(np.imag(self.J3)/np.imag(self.G3))**2))
@@ -311,12 +312,12 @@ class StressControlled(MAPSExperiment):
     def __init__(self, fundamental, harmonics, *args):
         super().__init__(fundamental, harmonics, *args)
 
-    def interconvert(self, eta0, lam, etainf):
+    def interconvert(self, lrmodel):
         """
         Convert from the complex compliance to the complex modulus.
         """
         self.G1 = np.array([1/j1 for j1 in self.J1])
-        self.G3 = np.array([J3_to_G3(self.J3[i], self.base, self.mapscoords[i], eta0, lam, etainf)
+        self.G3 = np.array([J3_to_G3(self.J3[i], self.base, self.mapscoords[i], lrmodel)
             for i in range(0,len(self.J3))])
         self.G3_var = (np.abs(np.real(self.J3_var)*(np.real(self.G3)/np.real(self.J3))**2) +
                 1j*np.abs(np.imag(self.J3_var)*(np.imag(self.G3)/np.imag(self.J3))**2))
@@ -525,18 +526,18 @@ def J_to_phi(J, w0, nset):
     phi = J*np.sum(wset)
     return phi
 
-def G3_to_J3(G3, w0, nset, eta0, lam, etainf):
+def G3_to_J3(G3, w0, nset, lrmodel):
     """
     Convert from the complex modulus to the complex compliance.
     """
-    G1 = lambda w: maxwellLR(w, [eta0, lam, etainf])
+    G1 = lambda w: lrmodel(w)
     return -1*G3/(G1(w0*nset[0])*G1(w0*nset[1])*G1(w0*nset[2])*G1(w0*sum(nset)))
 
-def J3_to_G3(J3, w0, nset, eta0, lam, etainf):
+def J3_to_G3(J3, w0, nset, lrmodel):
     """
     Convert from the complex compliance to the complex modulus.
     """
-    J1 = lambda w: 1/maxwellLR(w, [eta0, lam, etainf])
+    J1 = lambda w: 1/lrmodel(w)
     return -1*J3/(J1(w0*nset[0])*J1(w0*nset[1])*J1(w0*nset[2])*J1(w0*sum(nset)))
 
 def fitLR(data):
@@ -555,7 +556,6 @@ def fitLR(data):
     
     return popt
 
-
 def maxwellLR(w, p):
     """
     Define the Maxwell mode linear response function.
@@ -563,7 +563,35 @@ def maxwellLR(w, p):
     eta0 = p[0]
     lam = p[1]
     etainf = p[2]
-    return (1j*eta0*w/(1 + 1j*lam*w) + 1j*w*etainf)
+    G = (1j*eta0*w/(1 + 1j*lam*w) + 1j*w*etainf)
+    return G
+
+def interpolateLR(lrdata,k):
+    """
+    Define a linear interpolant for linear response data (returns an interpolant function).
+    """
+    wd = lrdata[0]
+    G = lrdata[1]
+    Gr = np.real(G)
+    Gi = np.imag(G)
+
+    # Get fit type
+    if k == 1:
+        order = "slinear"
+    elif k == 2:
+        order = "quadratic"
+    elif k == 3:
+        order = "cubic"
+    else:
+        sys.exit("Error: Spline interpolant must be of degree 1 <= k <= 3")
+
+    # Define interpolant funtions for the log of G' and G''
+    Gr_int = interp(np.log(wd),np.log(Gr),kind=order)
+    Gi_int = interp(np.log(wd),np.log(Gi),kind=order)
+
+    # Combine into composite function
+    G_int = lambda w: np.exp(Gr_int(np.log(np.abs(w)))) + 1j*np.sign(w)*np.exp(Gi_int(np.log(np.abs(w))))
+    return G_int
 
 def fit11const(experiments,eta0,lambda1,lambda2):
     """
@@ -616,12 +644,12 @@ def obj_fit11const(A,eta3,eta3_11_mat):
     obj = np.append(obj_real,obj_imag)
     return obj
 
-def gap_loading(lrmodel,params,rho,wrange):
+def gap_loading(lrmodel,rho,wrange):
     """
     Determine the gap loading limit at any time-scale (w) in range of interest
     """
     w = np.logspace(np.log10(wrange[0]),np.log10(wrange[1]),1000)
-    G1 = lrmodel(w,params)
+    G1 = lrmodel(w)
     eta1 = G1/(1j*w)
     etamag = np.abs(eta1)
     etaarg = np.arctan(-np.real(eta1)/np.imag(eta1))

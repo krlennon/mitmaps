@@ -208,6 +208,20 @@ class MAPSFigure():
                 ba_ax.yaxis.set_major_formatter(tck.FuncFormatter(arg_formatter))
                 ba_ax.yaxis.set_major_locator(tck.MultipleLocator(base=1.0))
                 ba_ax.yaxis.set_minor_locator(tck.MultipleLocator(0.2))
+               
+                # More plotting parameters
+                #ba_ax.set_xlim([2E-2,2E3])
+                #ba_ax.xaxis.set_major_locator(tck.LogLocator(base=10,numticks=6))
+                #ba_ax.xaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),numticks=8))
+                
+                #bm_ax.set_xlim([2E-2,2E3])
+                #bm_ax.xaxis.set_major_locator(tck.LogLocator(base=10,numticks=6))
+                #bm_ax.xaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),numticks=8))
+    
+                #bm_ax.set_ylim([5E-16,3])
+                #bm_ax.yaxis.set_major_locator(tck.LogLocator(base=10,numticks=17))
+                #bm_ax.yaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.33,0.67,1.0),numticks=17))
+                #bm_ax.set_yticklabels(["","",r"$10^{-15}$","","",r"$10^{-12}$","","",r"$10^{-9}$","","",r"$10^{-6}$","","",r"$10^{-3}$","","",r"$10^0$"])
 
     def plot_model(self, models, params, wlim, overlap=0, verbose=0):
         """
@@ -245,7 +259,7 @@ class MAPSFigure():
             for i in range(0,len(self.mapscoords)):
                 nset = self.mapscoords[i]
                 triangle = self.triangles[i]
-                barylabel = self.barylabels[i]
+                barylabel = self.barylabels[i] 
 
                 # If in overlap mode, check if data exists at the given barylabel
                 start_time = timeit.default_timer()
@@ -270,19 +284,19 @@ class MAPSFigure():
                     wv = list(np.abs(w1) + np.abs(w2) + np.abs(w3))
 
                     # Organize in the same way as experimental data
-                    A[barylabel] = [[eta3[n],wv[n]] for n in range(0,len(eta3))]
+                    A[barylabel] += [[eta3[n],wv[n]] for n in range(0,len(eta3))]
                 elif triangle == 'B':
                     eta3 = list(model(w1,w2,w3,params))
                     wv = list(np.abs(w1) + np.abs(w2) + np.abs(w3))
-                    B[barylabel] = [[eta3[n],wv[n]] for n in range(0,len(eta3))]
+                    B[barylabel] += [[eta3[n],wv[n]] for n in range(0,len(eta3))]
                 elif triangle == 'C':
                     eta3 = list(model(w1,w2,w3,params))
                     wv = list(np.abs(w1) + np.abs(w2) + np.abs(w3))
-                    C[barylabel] = [[eta3[n],wv[n]] for n in range(0,len(eta3))]
+                    C[barylabel] += [[eta3[n],wv[n]] for n in range(0,len(eta3))]
                 elif triangle == 'D':
                     eta3 = list(model(w1,w2,w3,params))
                     wv = list(np.abs(w1) + np.abs(w2) + np.abs(w3))
-                    D[barylabel] = [[eta3[n],wv[n]] for n in range(0,len(eta3))]
+                    D[barylabel] += [[eta3[n],wv[n]] for n in range(0,len(eta3))]
 
             # Plot
             self.make_plots((fig1,ax1), (fig2,ax2), (fig3,ax3), A, B, C, D, m, 'None', linespecs[j])
@@ -375,7 +389,7 @@ def arg_formatter(val,pos):
     elif val == 2:
         return "$\pi$"
 
-def plot_linear_response(lrdata,lrmodel,params):
+def plot_linear_response(lrdata,lrmodel):
     """
     Plot the linear response data and fit (G and J)
     """
@@ -399,8 +413,8 @@ def plot_linear_response(lrdata,lrmodel,params):
     axJ.loglog(w,Ji,'bo')
 
     # Plot the fitted model
-    w_v = np.logspace(np.log10(0.5*np.min(w)),np.log10(2*np.max(w)),100)
-    Gpred = lrmodel(w_v,params)
+    w_v = np.logspace(np.log10(np.min(w)),np.log10(np.max(w)),100)
+    Gpred = lrmodel(w_v)
     Jpred = 1/Gpred
     
     axG.loglog(w_v,np.real(Gpred),'r')
@@ -409,7 +423,7 @@ def plot_linear_response(lrdata,lrmodel,params):
     axJ.loglog(w_v,np.real(Jpred),'r')
     axJ.loglog(w_v,-np.imag(Jpred),'b')
 
-def tss_comparison(experiments,lrmodel,params):
+def tss_comparison(experiments,lrmodel):
     """
     Create parity plots to assess if data is TSS-like
     """
@@ -440,7 +454,7 @@ def tss_comparison(experiments,lrmodel,params):
                 w1 = nset[0]*w0
                 w2 = nset[1]*w0
                 w3 = nset[2]*w0
-                eta3tss = tss_eta3(w1,w2,w3,lrmodel,params)
+                eta3tss = tss_eta3(w1,w2,w3,lrmodel)
                 x += [np.log(np.abs(eta3tss))]
 
                 # Check if the sign matches
