@@ -32,29 +32,29 @@ import sys
 mode = "experimental"
 
 # Linear response
-LR_file = "../Example Data/xanthan_saos.txt" # Path to file with linear response data (set to None to skip)
-LR_fit = "interp3" # Fitting method for LR data ("Maxwell" or "linear_int")
+LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
+LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "linear_int")
 
 # Experimental mode (either "stress" or "strain")
 MAPS_control = "stress"
 
 # MAPS response
 MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
-MAPS_tones = [[1,4,16]] # Input tone sets for MAPS signals
-MAPS_freqs = [1.28] # Fundamental frequencies in the MAPS sweeps
+MAPS_tones = [[5,6,9],[1,4,16]] # Input tone sets for MAPS signals
+MAPS_freqs = [1.28,0.64,0.32,0.16] # Fundamental frequencies in the MAPS sweeps
 sort_order = "amplitude" # Outer sorted variable ("amplitude" or "frequency")
-plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
+plot_var = "eta" # MAPS response function to plot ("G", "eta", "J", or "phi")
 
 # Constitutive models
 full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
-maps_models = [tss_J3] # MAPS model to plot (specific to MAPS response function)
-extra_params = [-0.5] # Parameters in addition to those regressed from LVE response
+maps_models = [crm_eta3] # MAPS model to plot (specific to MAPS response function)
+extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
-plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
+plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
 outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
-tssComp = True # Choose whether to run a TSS comparison
+tssComp = False # Choose whether to run a TSS comparison
 
 ###################################
 ## EDITS BELOW HERE ARE OPTIONAL ##
