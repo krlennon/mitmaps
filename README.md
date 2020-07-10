@@ -94,7 +94,7 @@ outputTable = False
 tssComp = False
 ```
 
-See the [documentation](settings.md) for more details on the settings and options within this block.
+See the [documentation](docs/settings.md) for more details on the settings and options within this block.
 
 ## Contributing
 Inquiries about the MITMAPS software can be directed to krlennon[at]mit.edu.
