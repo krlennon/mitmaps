@@ -34,9 +34,9 @@ def set_configuration(control):
         strain_col = 5 # The column (index-1) containing the strain time-series
 
     t_units = 1 # Unit correction for time (assuming units of s)
-    #t_units = 0.001 <- example if units of time are in ms (0.001 s = 1 ms_
+    #t_units = 0.001 <- example if units of time are in ms (0.001 s = 1 ms)
     stress_units = 1 # Unit correction for stress (assuming units of Pa)
-    #stress_units = 1000 <- example if units of stress are in kPA (1000 Pa = 1 kPa)
+    #stress_units = 1000 <- example if units of stress are in kPa (1000 Pa = 1 kPa)
     strain_units = 1 # Unit correction for strain (assuming units of %)
     #strain_units = 100 <- example if units are strain units (100% = 1 strain unit)
 
