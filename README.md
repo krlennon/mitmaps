@@ -20,7 +20,7 @@ To install the MITMAPS software package, download all of the files in the `src` 
 
 The MITMAPS software requires `.txt` file formats for input data files. Small amplitude oscillatory shear (SAOS) data should be exported from Oscillatory Frequency Sweep experiments in TRIOS, and multi-tone MAPS data should be exported in a separate file from either Arbitrary Wave or Multiwave experiments in TRIOS.
 
-The SAOS data file should contain separate columns for the oscillation frequency (rad/s), storage modulus (Pa), and loss modulus (Pa). The default assumption is that the frequency resides in the fourth column, the storage modulus in the first column, and the loss modulus in the second column. The [example SAOS data file](Example Data/saos.txt) demonstrates this format. Any adjustments to the input file structure can be made by editing the `set_configuration` function in the file `configuration.py`. For example, if the frequency, storage modulus, and loss modulus are in the first, second, and third columns, respectively, the following modifications should be made:
+The SAOS data file should contain separate columns for the oscillation frequency (rad/s), storage modulus (Pa), and loss modulus (Pa). The default assumption is that the frequency resides in the fourth column, the storage modulus in the first column, and the loss modulus in the second column. The [example SAOS data file](Example\ Data/saos.txt) demonstrates this format. Any adjustments to the input file structure can be made by editing the `set_configuration` function in the file `configuration.py`. For example, if the frequency, storage modulus, and loss modulus are in the first, second, and third columns, respectively, the following modifications should be made:
 
 ```python
 w_col = 1
