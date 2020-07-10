@@ -33,7 +33,7 @@ mode = "experimental"
 
 # Linear response
 LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
-LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "linear_int")
+LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
 
 # Experimental mode (either "stress" or "strain")
 MAPS_control = "stress"
@@ -61,18 +61,18 @@ tssComp = False # Choose whether to run a TSS comparison
 ###################################
 
 # Check for consistency in inputs
-if (plot_var == "J" or plot_var == "phi") and MAPS_control == "strain" and LR_file == None and mode == "data":
+if (plot_var == "J" or plot_var == "phi") and MAPS_control == "strain" and LR_file == None and mode == "experimental":
     sys.exit("Error: MAPS response for " + plot_var + " cannot be determined from strain-controlled data alone. To compute "
           + plot_var + ", include stress-controlled data or linear response data.")
 
-elif (plot_var == "G" or plot_var == "eta") and (MAPS_control == "stress" or MAPS_control == "maostress") and LR_file == None and mode == "data":
+elif (plot_var == "G" or plot_var == "eta") and (MAPS_control == "stress" or MAPS_control == "maostress") and LR_file == None and mode == "experimental":
     sys.exit("Error: MAPS response for " + plot_var + " cannot be determined from stress-controlled data alone. To compute "
           + plot_var + ", include strain-controlled data or linear response data.")
-elif (LR_file == None) and plotLR and mode == "data":
+elif (LR_file == None) and plotLR and mode == "experimental":
     sys.exit("Error: No linear response data provided for plotting. Provide linear response data or set plotLR to False")
-elif (LR_file == None) and gapLoading and mode == "data":
+elif (LR_file == None) and gapLoading and mode == "experimental":
     sys.exit("Error: No linear response data provided for gap loading limit analysis. Provide linear response data or set gapLoading to False")
-elif (LR_file == None) and tssComp and mode == "data":
+elif (LR_file == None) and tssComp and mode == "experimental":
     sys.exit("Error: No linear response data provided for TSS comparison. Provide linear response data of set tssComp to False")
 
 # Read LR data and fit to a single Maxwell mode
@@ -182,7 +182,7 @@ else:
 
         # Get the MAPS coordinates for the input tone set
         sums, mapscoords = get_maps_coords(tone_set)
-         
+
         # Remove repeated sums
         rem = []
         k = 0
@@ -196,7 +196,7 @@ else:
             if sum(np.sign(nset)) == -1:
                 mapscoords[k,:] = -1*mapscoords[k,:]
             k += 1
-        
+
         # Remove repeated sums
         rem.reverse()
         for k in rem:
