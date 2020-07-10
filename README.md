@@ -20,7 +20,7 @@ To install the MITMAPS software package, download all of the files in the `src` 
 
 The MITMAPS software requires `.txt` file formats for input data files. Small amplitude oscillatory shear (SAOS) data should be exported from Oscillatory Frequency Sweep experiments in TRIOS, and multi-tone MAPS data should be exported in a separate file from either Arbitrary Wave or Multiwave experiments in TRIOS.
 
-The SAOS data file should contain separate columns for the oscillation frequency (rad/s), storage modulus (Pa), and loss modulus (Pa). The default assumption is that the frequency resides in the fourth column, the storage modulus in the first column, and the loss modulus in the second column. The [example SAOS data file](Example\ Data/saos.txt) demonstrates this format. Any adjustments to the input file structure can be made by editing the `set_configuration` function in the file `configuration.py`. For example, if the frequency, storage modulus, and loss modulus are in the first, second, and third columns, respectively, the following modifications should be made:
+The SAOS data file should contain separate columns for the oscillation frequency (rad/s), storage modulus (Pa), and loss modulus (Pa). The default assumption is that the frequency resides in the fourth column, the storage modulus in the first column, and the loss modulus in the second column. The [example SAOS data file](Example%20Data/saos.txt) demonstrates this format. Any adjustments to the input file structure can be made by editing the `set_configuration` function in the file `configuration.py`. For example, if the frequency, storage modulus, and loss modulus are in the first, second, and third columns, respectively, the following modifications should be made:
 
 ```python
 w_col = 1
@@ -56,13 +56,13 @@ stress_units = 1000
 strain_units = 100
 ```
 
-Different Arbitrary Wave or Multiwave experiments in the same MAPS data file should be separated by the line `[step]` and labelled `Sine Strain - n` or `Arbitrary Wave - n`. These experiments should be organized hierarchically by the input tone set, amplitude, and frequency, in which case the `sort_order` variable in the file `MITMAPS.py` should be set to `"amplitude"`; or by the input tone set, frequency, and amplitude, in which case `sort_order` should be set to `"frequency"`. The [example MAPS data file](Example Data/MAPS Data/maps.txt) demonstrates the appropriate format for a MAPS data file with `sort_order = "amplitude"`.
+Different Arbitrary Wave or Multiwave experiments in the same MAPS data file should be separated by the line `[step]` and labelled `Sine Strain - n` or `Arbitrary Wave - n`. These experiments should be organized hierarchically by the input tone set, amplitude, and frequency, in which case the `sort_order` variable in the file `MITMAPS.py` should be set to `"amplitude"`; or by the input tone set, frequency, and amplitude, in which case `sort_order` should be set to `"frequency"`. The [example MAPS data file](Example%20Data/MAPS%20Data/maps.txt) demonstrates the appropriate format for a MAPS data file with `sort_order = "amplitude"`.
 
 Multiple MAPS data files may be anaylzed simultaneously as a part of the same MAPS frequency sweeps(s). All MAPS data files to be analyzed simultaneously by the software should be placed in a dedicated directory, even if only one MAPS data file exists.
 
 ### Example `MITMAPS.py` File
 
-After configuring the input data file settings, users should modify the beginning lines of the file `MITMAPS.py`. Below is an example of these lines, which when executed will input the example [SAOS](Example Data/saos.txt) and [MAPS](Example Data/MAPS Data/maps.txt) data files, analyze the data, and generate Bode plots and Nyquist diagrams the third order complex viscosity in MAPS frequency sweeps with `[n1,n2,n3] = [5,6,9]` and `[1,4,16]`.
+After configuring the input data file settings, users should modify the beginning lines of the file `MITMAPS.py`. Below is an example of these lines, which when executed will input the example [SAOS](Example%20Data/saos.txt) and [MAPS](Example%20Data/MAPS%20Data/maps.txt) data files, analyze the data, and generate Bode plots and Nyquist diagrams the third order complex viscosity in MAPS frequency sweeps with `[n1,n2,n3] = [5,6,9]` and `[1,4,16]`.
 
 ```python
 # Select "experimental" mode for experimental data analysis, or "simulation" mode for model predictions/simulations only
