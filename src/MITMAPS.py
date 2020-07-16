@@ -221,7 +221,7 @@ wmax = np.max(MAPS_freqs)
 # Plot model predictions for each figure object
 if maps_models != None:
     for figure in figures:
-        figures[figure].plot_model(maps_models, params, [np.log10(wmin),np.log10(wmax)], overlap=overlap, verbose=0)
+        figures[figure].plot_model(maps_models, params, [wmin,wmax], overlap=overlap, verbose=0)
 
 sys.stdout.write("\rPlotting MAPS data ... done\n")
 
