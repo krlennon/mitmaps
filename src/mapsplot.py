@@ -124,9 +124,9 @@ class MAPSFigure():
         fig3.suptitle("Nyquist Plot")
 
         # For each triangle, plot all isobarycentric curves
-        markers = ['o','s','^','*']
+        markers = ['o','s','^','*','P','X','d','v','<','>','p']
         fills = ["full","none"]
-        wmin = 10000.0
+        eamin = 10000.0
         wmax = 0.0
         magmin = 1E10
         magmax = 0.0
