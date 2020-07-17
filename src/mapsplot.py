@@ -199,7 +199,7 @@ class MAPSFigure():
                     bm_ax = ax1[k,l]
                     ba_ax = ax2[k,l]
                     ny_ax = ax3[k,l]
-                
+
                 # Adjust some plotting parameters
                 bm_ax.tick_params(which='both', direction='in', top=True, right=True)
                 ba_ax.tick_params(which='both', direction='in', top=True, right=True)
@@ -208,16 +208,16 @@ class MAPSFigure():
                 ba_ax.yaxis.set_major_formatter(tck.FuncFormatter(arg_formatter))
                 ba_ax.yaxis.set_major_locator(tck.MultipleLocator(base=1.0))
                 ba_ax.yaxis.set_minor_locator(tck.MultipleLocator(0.2))
-               
+
                 # More plotting parameters
                 #ba_ax.set_xlim([2E-2,2E3])
                 #ba_ax.xaxis.set_major_locator(tck.LogLocator(base=10,numticks=6))
                 #ba_ax.xaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),numticks=8))
-                
+
                 #bm_ax.set_xlim([2E-2,2E3])
                 #bm_ax.xaxis.set_major_locator(tck.LogLocator(base=10,numticks=6))
                 #bm_ax.xaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),numticks=8))
-    
+
                 #bm_ax.set_ylim([5E-16,3])
                 #bm_ax.yaxis.set_major_locator(tck.LogLocator(base=10,numticks=17))
                 #bm_ax.yaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.33,0.67,1.0),numticks=17))
@@ -259,7 +259,7 @@ class MAPSFigure():
             for i in range(0,len(self.mapscoords)):
                 nset = self.mapscoords[i]
                 triangle = self.triangles[i]
-                barylabel = self.barylabels[i] 
+                barylabel = self.barylabels[i]
 
                 # If in overlap mode, check if data exists at the given barylabel
                 start_time = timeit.default_timer()
@@ -416,12 +416,30 @@ def plot_linear_response(lrdata,lrmodel):
     w_v = np.logspace(np.log10(np.min(w)),np.log10(np.max(w)),100)
     Gpred = lrmodel(w_v)
     Jpred = 1/Gpred
-    
+
     axG.loglog(w_v,np.real(Gpred),'r')
     axG.loglog(w_v,np.imag(Gpred),'b')
 
     axJ.loglog(w_v,np.real(Jpred),'r')
     axJ.loglog(w_v,-np.imag(Jpred),'b')
+
+    return figG,axG,figJ,axJ
+
+def plot_MAPS_LR(experiments,figG,axG,figJ,axJ):
+    """
+    Plot the measured linear response from MAPS experiments
+    """
+    for experiment in experiments:
+        # Get the frequencies, G1, and J1
+        w = experiment.base*np.array(experiment.harmonics)
+        G1 = np.array(experiment.G1)
+        J1 = np.array(experiment.J1)
+
+        # Plot on axes
+        axG.loglog(w,np.real(G1),'rX')
+        axG.loglog(w,np.imag(G1),'bX')
+        axJ.loglog(w,np.real(J1),'rX')
+        axJ.loglog(w,-np.imag(J1),'bX')
 
 def tss_comparison(experiments,lrmodel):
     """
@@ -445,7 +463,7 @@ def tss_comparison(experiments,lrmodel):
             # Get the barycentric coordinates and MAPS measurement
             bary = get_barycentric(np.abs(nset))
             eta3_val = eta3[k]
-            
+
             # Check if value is NaN
             if not np.isnan(eta3_val):
                 y += [np.log(np.abs(eta3_val))]

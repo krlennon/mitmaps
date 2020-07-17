@@ -238,7 +238,7 @@ class MAPSExperiment:
             results[i] = (x[k] + herm_sym[int((k-2)/2)]*1j*x[k+1])
             variance[i] = (cov[k,k] + 1j*cov[k+1,k+1])
             k += 2
-    
+
     def get_viscosity(self):
         """
         Convert from the complex modulus to the complex viscosity.
@@ -249,7 +249,7 @@ class MAPSExperiment:
             for i in range(0,len(self.G3))])
         self.eta3_var = (np.abs(np.imag(self.G3_var)*(np.real(self.eta3)/np.imag(self.G3))**2) +
             1j*np.abs(np.real(self.G3_var)*(np.imag(self.eta3)/np.real(self.G3))**2))
-    
+
     def get_fluidity(self):
         """
         Convert from the complex compliance to the complex fluidity

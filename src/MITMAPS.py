@@ -51,7 +51,7 @@ maps_models = [crm_eta3] # MAPS model to plot (specific to MAPS response functio
 extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
-plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
+plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
 outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
 tssComp = False # Choose whether to run a TSS comparison
@@ -107,7 +107,7 @@ if LR_file != None:
 
     # Plot linear response data if specified
     if plotLR:
-        plot_linear_response(LR_data,LR_model)
+        figG,axG,figJ,axJ = plot_linear_response(LR_data,LR_model)
 
     # Plot gap loading limit analysis if specified
     if gapLoading:
@@ -172,6 +172,10 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
     # 1 - display, don't save, 2 - display and save)
     sys.stdout.write("\rPlotting MAPS data ...")
     figures = make_figures(experiments, plot_var, verbose=0)
+
+    # Plot the linear response from the experiments
+    if plotLR:
+        plot_MAPS_LR(experiments,figG,axG,figJ,axJ)
 
 # If no data or full model are provided, initialize figures to plot only the analytical MAPS prediction
 else:
