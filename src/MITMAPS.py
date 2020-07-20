@@ -32,7 +32,7 @@ import sys
 mode = "experimental"
 
 # Linear response
-LR_file = None # Path to file with linear response data (set to None to skip)
+LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
 LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
 
 # Experimental mode (either "stress" or "strain")
@@ -51,7 +51,7 @@ maps_models = [crm_J3] # MAPS model to plot (specific to MAPS response function)
 extra_params = [20.5,0.55,0.044] # Parameters in addition to those regressed from LVE response
 
 # Additional options
-plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
+plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
 outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
 tssComp = False # Choose whether to run a TSS comparison
@@ -59,19 +59,6 @@ tssComp = False # Choose whether to run a TSS comparison
 ###################################
 ## EDITS BELOW HERE ARE OPTIONAL ##
 ###################################
-
-# Check for consistency in inputs
-if (plot_var == "J" or plot_var == "phi") and MAPS_control == "strain" and LR_file == None and mode == "experimental":
-    sys.exit("Error: MAPS response for " + plot_var + " cannot be determined from strain-controlled data alone. To compute "
-          + plot_var + ", include stress-controlled data or linear response data.")
-
-elif (plot_var == "G" or plot_var == "eta") and (MAPS_control == "stress" or MAPS_control == "maostress") and LR_file == None and mode == "experimental":
-    sys.exit("Error: MAPS response for " + plot_var + " cannot be determined from stress-controlled data alone. To compute "
-          + plot_var + ", include strain-controlled data or linear response data.")
-elif (LR_file == None) and gapLoading and mode == "experimental":
-    sys.exit("Error: No linear response data provided for gap loading limit analysis. Provide linear response data or set gapLoading to False")
-elif (LR_file == None) and tssComp and mode == "experimental":
-    sys.exit("Error: No linear response data provided for TSS comparison. Provide linear response data of set tssComp to False")
 
 # Read LR data and fit to a single Maxwell mode
 params = extra_params
@@ -146,6 +133,8 @@ if mode == "simulation" and full_model != None:
 # Process the experiments for "data" mode and "simulation" mode
 if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and full_model != None):
     # Process the data for each experiment
+    wLR = []
+    G1 = []
     for experiment in experiments:
         # Preprocess the data
         experiment.trim(ncycles=5)
@@ -154,9 +143,28 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
         # Process the data
         experiment.get_MAPS()
 
-        # Convert between stress and strain control (requires LR data)
-        if LR_file != None:
-            experiment.interconvert(LR_model)
+        # Compile the linear response data
+        wLR += [experiment.base*n for n in experiment.harmonics]
+        G1 += list(experiment.G1)
+
+    # Fit the linear response to the specified model (if no LR_file provided)
+    LR_data_MAPS = [np.array(wLR),np.array(G1)]
+    if LR_file == None:
+        # Fit the LR data to a single-mode Maxwell model
+        if LR_fit == "Maxwell":
+            eta0, lam, etainf = fitLR(LR_data_MAPS)
+            LR_model = lambda w: maxwellLR(w,[eta0,lam,etainf])
+
+            # Set the model parameters to include the linear response parameters
+            params = [eta0,lam,etainf] + extra_params
+
+        # Fit the LR data to kth order splines
+        elif "interp" in LR_fit:
+            LR_model = interpolateLR(LR_data_MAPS,int(LR_fit[6]))
+
+    # Convert between stress and strain control (requires LR data)
+    for experiment in experiments:
+        experiment.interconvert(LR_model)
 
     # If TSS comparison is selected, make the plot
     if tssComp:
@@ -177,7 +185,7 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
 
     # Plot the linear response from the experiments
     if plotLR:
-        plot_MAPS_LR(experiments,figG,axG,figJ,axJ)
+        plot_linear_response(LR_data_MAPS,LR_model,marker='x',axes=[figG,axG,figJ,axJ])
 
 # If no data or full model are provided, initialize figures to plot only the analytical MAPS prediction
 else:

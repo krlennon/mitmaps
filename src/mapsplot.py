@@ -389,7 +389,7 @@ def arg_formatter(val,pos):
     elif val == 2:
         return "$\pi$"
 
-def plot_linear_response(lrdata,lrmodel):
+def plot_linear_response(lrdata,lrmodel,marker='o',**kwargs):
     """
     Plot the linear response data and fit (G and J)
     """
@@ -402,15 +402,19 @@ def plot_linear_response(lrdata,lrmodel):
     Ji = -np.imag(J)
 
     # Plot the data
-    figG,axG = plt.subplots(1,1)
-    figG.suptitle("Linear Complex Modulus")
-    axG.loglog(w,Gr,'ro')
-    axG.loglog(w,Gi,'bo')
+    try:
+        figG,axG,figJ,axJ = kwargs["axes"]
+    except KeyError:
+        figG,axG = plt.subplots(1,1)
+        figJ,axJ = plt.subplots(1,1)
 
-    figJ,axJ = plt.subplots(1,1)
+    figG.suptitle("Linear Complex Modulus")
+    axG.loglog(w,Gr,'r'+marker)
+    axG.loglog(w,Gi,'b'+marker)
+
     figJ.suptitle("Linear Complex Compliance")
-    axJ.loglog(w,Jr,'ro')
-    axJ.loglog(w,Ji,'bo')
+    axJ.loglog(w,Jr,'r'+marker)
+    axJ.loglog(w,Ji,'b'+marker)
 
     # Plot the fitted model
     w_v = np.logspace(np.log10(np.min(w)),np.log10(np.max(w)),100)
@@ -424,22 +428,6 @@ def plot_linear_response(lrdata,lrmodel):
     axJ.loglog(w_v,-np.imag(Jpred),'b')
 
     return figG,axG,figJ,axJ
-
-def plot_MAPS_LR(experiments,figG,axG,figJ,axJ):
-    """
-    Plot the measured linear response from MAPS experiments
-    """
-    for experiment in experiments:
-        # Get the frequencies, G1, and J1
-        w = experiment.base*np.array(experiment.harmonics)
-        G1 = np.array(experiment.G1)
-        J1 = np.array(experiment.J1)
-
-        # Plot on axes
-        axG.loglog(w,np.real(G1),'rX')
-        axG.loglog(w,np.imag(G1),'bX')
-        axJ.loglog(w,np.real(J1),'rX')
-        axJ.loglog(w,-np.imag(J1),'bX')
 
 def tss_comparison(experiments,lrmodel):
     """
