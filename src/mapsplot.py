@@ -126,7 +126,7 @@ class MAPSFigure():
         # For each triangle, plot all isobarycentric curves
         markers = ['o','s','^','*','P','X','d','v','<','>','p']
         fills = ["full","none"]
-        eamin = 10000.0
+        wmin = 10000.0
         wmax = 0.0
         magmin = 1E10
         magmax = 0.0
