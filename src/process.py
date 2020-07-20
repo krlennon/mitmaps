@@ -270,9 +270,8 @@ class StrainControlled(MAPSExperiment):
 
     def interconvert(self, lrmodel):
         """
-        Convert from the complex modulus to the complex compliance
+        Convert from the third order complex modulus to the third order complex compliance
         """
-        self.J1 = np.array([1/g1 for g1 in self.G1])
         self.J3 = np.array([G3_to_J3(self.G3[i], self.base, self.mapscoords[i], lrmodel)
             for i in range(0,len(self.G3))])
         self.J3_var = (np.abs(np.real(self.G3_var)*(np.real(self.J3)/np.real(self.G3))**2) +
@@ -305,6 +304,9 @@ class StrainControlled(MAPSExperiment):
         # Convert to eta1 and eta3
         self.get_viscosity()
 
+        # Convert to J1
+        self.J1 = np.array([1/g1 for g1 in self.G1])
+
 class StressControlled(MAPSExperiment):
     """
     Class definition for the stress controlled subclass of MAPS experiments.
@@ -314,9 +316,8 @@ class StressControlled(MAPSExperiment):
 
     def interconvert(self, lrmodel):
         """
-        Convert from the complex compliance to the complex modulus.
+        Convert from the third order complex compliance to the third order complex modulus.
         """
-        self.G1 = np.array([1/j1 for j1 in self.J1])
         self.G3 = np.array([J3_to_G3(self.J3[i], self.base, self.mapscoords[i], lrmodel)
             for i in range(0,len(self.J3))])
         self.G3_var = (np.abs(np.real(self.J3_var)*(np.real(self.G3)/np.real(self.J3))**2) +
@@ -348,6 +349,9 @@ class StressControlled(MAPSExperiment):
 
         # Convert to phi1 and phi3
         self.get_fluidity()
+
+        # Convert to G1
+        self.G1 = np.array([1/j1 for j1 in self.J1])
 
 class MAOStressControlled(StressControlled):
     """

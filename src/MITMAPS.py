@@ -32,7 +32,7 @@ import sys
 mode = "experimental"
 
 # Linear response
-LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
+LR_file = None # Path to file with linear response data (set to None to skip)
 LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
 
 # Experimental mode (either "stress" or "strain")
@@ -43,12 +43,12 @@ MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
 MAPS_tones = [[5,6,9],[1,4,16]] # Input tone sets for MAPS signals
 MAPS_freqs = [1.28,0.64,0.32,0.16] # Fundamental frequencies in the MAPS sweeps
 sort_order = "amplitude" # Outer sorted variable ("amplitude" or "frequency")
-plot_var = "eta" # MAPS response function to plot ("G", "eta", "J", or "phi")
+plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
 
 # Constitutive models
 full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
-maps_models = [crm_eta3] # MAPS model to plot (specific to MAPS response function)
-extra_params = [] # Parameters in addition to those regressed from LVE response
+maps_models = [crm_J3] # MAPS model to plot (specific to MAPS response function)
+extra_params = [20.5,0.55,0.044] # Parameters in addition to those regressed from LVE response
 
 # Additional options
 plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
@@ -68,8 +68,6 @@ if (plot_var == "J" or plot_var == "phi") and MAPS_control == "strain" and LR_fi
 elif (plot_var == "G" or plot_var == "eta") and (MAPS_control == "stress" or MAPS_control == "maostress") and LR_file == None and mode == "experimental":
     sys.exit("Error: MAPS response for " + plot_var + " cannot be determined from stress-controlled data alone. To compute "
           + plot_var + ", include strain-controlled data or linear response data.")
-elif (LR_file == None) and plotLR and mode == "experimental":
-    sys.exit("Error: No linear response data provided for plotting. Provide linear response data or set plotLR to False")
 elif (LR_file == None) and gapLoading and mode == "experimental":
     sys.exit("Error: No linear response data provided for gap loading limit analysis. Provide linear response data or set gapLoading to False")
 elif (LR_file == None) and tssComp and mode == "experimental":
@@ -114,6 +112,10 @@ if LR_file != None:
         wmin = np.min(MAPS_freqs)
         wmax = 3*np.max(np.max(np.array(MAPS_tones)))*np.max(MAPS_freqs)
         gap_loading(LR_model,1000,[wmin,wmax])
+else:
+    # Initialize linear response plots
+    figG,axG = plt.subplots(1,1)
+    figJ,axJ = plt.subplots(1,1)
 
 # Input the MAPS data in "data" mode
 if mode == "experimental" and MAPS_folder != None:
