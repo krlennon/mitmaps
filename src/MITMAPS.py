@@ -71,7 +71,7 @@ if LR_file != None:
     # Fit the LR data to a single-mode Maxwell model
     if LR_fit == "Maxwell":
         sys.stdout.write("\rFitting linear response data ...")
-        eta0, lam, etainf = fitLR(LR_data)
+        eta0, lam, etainf = fitLR(LR_data,maxwellLR)
         LR_model = lambda w: maxwellLR(w,[eta0,lam,etainf])
         sys.stdout.write("\rFitting linear response data ... done\n")
 

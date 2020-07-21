@@ -544,7 +544,7 @@ def J3_to_G3(J3, w0, nset, lrmodel):
     J1 = lambda w: 1/lrmodel(w)
     return -1*J3/(J1(w0*nset[0])*J1(w0*nset[1])*J1(w0*nset[2])*J1(w0*sum(nset)))
 
-def fitLR(data):
+def fitLR(data,lrmodel):
     """
     Fit the linear response frequency sweep data to a Maxwell mode.
     Returns [eta0, lambda].
@@ -555,9 +555,9 @@ def fitLR(data):
     Gi = np.imag(G)
 
     # Fit to the Maxwell mode
-    obj = lambda p: np.sum(np.abs(maxwellLR(w, p) - (Gr + 1j*Gi))**2)
+    obj = lambda p: np.sum(np.abs(lrmodel(w, p) - (Gr + 1j*Gi))**2)
     popt = fmin(func=obj, x0=[1,1,1], disp=False)
-    
+
     return popt
 
 def maxwellLR(w, p):
