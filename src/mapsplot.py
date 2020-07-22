@@ -111,7 +111,7 @@ class MAPSFigure():
         self.bodearg = (fig2,ax2)
         self.nyquist = (fig3,ax3)
 
-    def make_plots(self, bodemag, bodearg, nyquist, A, B, C, D, m, mark='o', line='dashed'):
+    def make_plots(self, bodemag, bodearg, nyquist, A, B, C, D, m, mark=True, line='dashed'):
         """
         Create plots given data.
         """
@@ -124,7 +124,21 @@ class MAPSFigure():
         fig3.suptitle("Nyquist Plot")
 
         # For each triangle, plot all isobarycentric curves
+        markers = ['o','s','^','*','P','X','d','v','<','>','p']
+        fills = ["full","none"]
+        wmin = 10000.0
+        wmax = 0.0
+        magmin = 1E10
+        magmax = 0.0
         for i in range(0, len(self.barysets)):
+            # Determine the marker style and fill
+            if mark:
+                mstyle = markers[int(np.floor(i/2))]
+                fstyle = fills[int(np.mod(i,2))]
+            else:
+                mstyle = "None"
+                fstyle = "none"
+
             # Make the Bode plots and Nyquist diagram
             for j in range(0,2*m):
                 if j == 0:
@@ -155,10 +169,16 @@ class MAPSFigure():
 
                     # Plot the Nyquist diagram
                     ny_ax.plot(np.real(data[:,0]), np.imag(data[:,0]),
-                            color=self.barysets[i], marker=mark, linestyle=line)
+                            color=self.barysets[i], marker=mstyle, fillstyle=fstyle, linestyle=line)
 
                     # Plot error bars on the Bode plots (for experiments with mark = 'o')
-                    if mark == 'o':
+                    if mark:
+                        # Get the maximum and minimum frequencies
+                        if np.real(data[0,1]) < wmin:
+                            wmin = np.real(data[0,1])
+                        if np.real(data[-1,1]) > wmax:
+                            wmax = np.real(data[-1,1])
+
                         # Calculate the uncertainty of the abs and arg
                         a = np.real(data[:,0])
                         b = np.imag(data[:,0])
@@ -174,16 +194,23 @@ class MAPSFigure():
                         bm_ax.set_yscale('log',nonposy='clip')
                         bm_ax.errorbar(np.real(data[:,1]), mag,
                                 yerr=np.sqrt(abs_var), color=self.barysets[i],
-                                marker=mark, linestyle=line)
+                                marker=mstyle, fillstyle=fstyle, linestyle=line)
                         ba_ax.set_xscale('log',nonposx='clip')
                         ba_ax.errorbar(np.real(data[:,1]), arg*2/np.pi,
                                 yerr=np.sqrt(arg_var)*2/np.pi, color=self.barysets[i],
-                                marker=mark, linestyle=line)
+                                marker=mstyle, fillstyle=fstyle, linestyle=line)
+
+                        # Get the maximum and minimum magnitudes
+                        if np.min(mag) < magmin:
+                            magmin = np.min(mag)
+                        if np.max(mag) > magmax:
+                            magmax = np.max(mag)
+
                     else:
                         bm_ax.loglog(np.real(data[:,1]), np.abs(data[:,0]),
-                                color=self.barysets[i],marker=mark, linestyle=line)
+                                color=self.barysets[i], marker=mstyle, fillstyle=fstyle, linestyle=line)
                         ba_ax.semilogx(np.real(data[:,1]), np.angle(data[:,0])*2/np.pi,
-                                color=self.barysets[i], marker=mark, linestyle=line)
+                                color=self.barysets[i], marker=mstyle, fillstyle=fstyle, linestyle=line)
 
 
 
@@ -209,16 +236,18 @@ class MAPSFigure():
                 ba_ax.yaxis.set_major_locator(tck.MultipleLocator(base=1.0))
                 ba_ax.yaxis.set_minor_locator(tck.MultipleLocator(0.2))
 
+                if mark:
+                    ba_ax.set_xlim([wmin/2,wmax*2])
+                    bm_ax.set_xlim([wmin/2,wmax*2])
+                    bm_ax.set_ylim([magmin/2,magmax*2])
+
                 # More plotting parameters
-                #ba_ax.set_xlim([2E-2,2E3])
                 #ba_ax.xaxis.set_major_locator(tck.LogLocator(base=10,numticks=6))
                 #ba_ax.xaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),numticks=8))
 
-                #bm_ax.set_xlim([2E-2,2E3])
                 #bm_ax.xaxis.set_major_locator(tck.LogLocator(base=10,numticks=6))
                 #bm_ax.xaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9),numticks=8))
 
-                #bm_ax.set_ylim([5E-16,3])
                 #bm_ax.yaxis.set_major_locator(tck.LogLocator(base=10,numticks=17))
                 #bm_ax.yaxis.set_minor_locator(tck.LogLocator(base=10,subs=(0.33,0.67,1.0),numticks=17))
                 #bm_ax.set_yticklabels(["","",r"$10^{-15}$","","",r"$10^{-12}$","","",r"$10^{-9}$","","",r"$10^{-6}$","","",r"$10^{-3}$","","",r"$10^0$"])
@@ -253,7 +282,7 @@ class MAPSFigure():
             B = [[] for n in range(0, len(self.barysets))]
             C = [[] for n in range(0, len(self.barysets))]
             D = [[] for n in range(0, len(self.barysets))]
-            w = np.logspace(wlim[0],wlim[1],1000)
+            w = np.logspace(np.log10(wlim[0]/(30*np.max(self.mapscoords))),np.log10(wlim[1]*30*np.max(self.mapscoords)),1000)
 
             # Make curve for every coordinate
             for i in range(0,len(self.mapscoords)):
@@ -299,7 +328,7 @@ class MAPSFigure():
                     D[barylabel] += [[eta3[n],wv[n]] for n in range(0,len(eta3))]
 
             # Plot
-            self.make_plots((fig1,ax1), (fig2,ax2), (fig3,ax3), A, B, C, D, m, 'None', linespecs[j])
+            self.make_plots((fig1,ax1), (fig2,ax2), (fig3,ax3), A, B, C, D, m, False, linespecs[j])
             j += 1
 
         if verbose == 1:
