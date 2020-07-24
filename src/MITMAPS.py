@@ -48,7 +48,7 @@ plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
 # Constitutive models
 full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
 maps_models = [crm_J3] # MAPS model to plot (specific to MAPS response function)
-extra_params = [20.5,0.55,0.044] # Parameters in addition to those regressed from LVE response
+extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
 plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
