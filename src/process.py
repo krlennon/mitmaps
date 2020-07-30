@@ -556,9 +556,21 @@ def fitLR(data,lrmodel):
 
     # Fit to the Maxwell mode
     obj = lambda p: np.sum(np.abs(lrmodel(w, p) - (Gr + 1j*Gi))**2)
-    popt = fmin(func=obj, x0=[1,1,1], disp=False)
+    popt,fopt,_,_,_ = fmin(func=obj, x0=[1,1,1], disp=False, full_output=1)
 
-    return popt
+    # Calculate the uncertainty in the parameters
+    eta0 = popt[0]
+    tau = popt[1]
+    etainf = popt[2]
+    dfdeta0 = np.concatenate((tau*w**2/(1 + (tau*w)**2), w/(1 + (tau*w)**2)))
+    dfdtau = np.concatenate((eta0*w**2/(1 + (tau*w)**2) - 2*eta0*tau**2*w**4/((1 + (tau*w)**2)**2), -2*eta0*tau*w**3/((1 + (tau*w)**2)**2)))
+    dfdetainf = np.concatenate((np.zeros(np.shape(w)), w))
+    A = np.matrix([dfdeta0, dfdtau, dfdetainf]).T
+    n = len(w)
+    V = (fopt/(n - 3))*np.linalg.inv(np.dot(A.T,A))
+    pvar = np.diag(V)/n
+
+    return popt, pvar
 
 def maxwellLR(w, p):
     """
