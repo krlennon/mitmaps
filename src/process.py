@@ -568,7 +568,7 @@ def fitLR(data,lrmodel):
     A = np.matrix([dfdeta0, dfdtau, dfdetainf]).T
     n = len(w)
     V = (fopt/(n - 3))*np.linalg.inv(np.dot(A.T,A))
-    pvar = np.diag(V)/n
+    pvar = np.diag(V)
 
     return popt, pvar
 
