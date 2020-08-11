@@ -52,9 +52,10 @@ extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
 symbols = True # Option to include unique symbols in addition to colors on Bode + Nyquist plots
-plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
+plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
+plotMAPSLR = False # Choose whether to plot the linear response data coming from the MAPS experiments
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
-outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
+outputTable = True # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
 tssComp = False # Choose whether to run a TSS comparison
 
 ###################################
@@ -185,8 +186,8 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
     sys.stdout.write("\rPlotting MAPS data ...")
     figures = make_figures(experiments, plot_var, verbose=0, symbols=symbols)
 
-    # Plot the linear response from the experiments
-    if plotLR:
+    # Plot the linear response from the MAPS experiments
+    if plotMAPSLR:
         plot_linear_response(LR_data_MAPS,LR_model,marker='x',axes=[figG,axG,figJ,axJ])
 
 # If no data or full model are provided, initialize figures to plot only the analytical MAPS prediction
@@ -243,6 +244,6 @@ sys.stdout.write("\rPlotting MAPS data ... done\n")
 
 # Output the data to a CSV file
 if outputTable:
-    output_MAPS(experiments)
+    output_MAPS(experiments,MAPS_folder)
 
 plt.show()

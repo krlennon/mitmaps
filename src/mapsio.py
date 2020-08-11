@@ -33,12 +33,14 @@ def readfolder(foldername):
     # Get file names
     files = [f for f in os.listdir(foldername) if os.path.isfile(os.path.join(foldername,f))]
     files.sort()
-    
+
     # For every file, call readfile and append outputs
     exp_types = []
     exp_data = []
     for f in files:
         if f[0] == '.':
+            continue
+        elif f[-4:] != ".txt":
             continue
         new_types, new_data = readfile(os.path.join(foldername,f))
         exp_types += new_types
@@ -198,7 +200,7 @@ def getLR(exp_data, exp_types):
 
             return [w,G]
 
-def output_MAPS(experiments):
+def output_MAPS(experiments,MAPS_folder):
     """
     Output the MAPS data in tabular form
     """
@@ -208,23 +210,35 @@ def output_MAPS(experiments):
 
     # Append each experiment to DataFrame
     for experiment in experiments:
-        w1 = experiment.mapscoords[:,2]*experiment.base
-        w2 = experiment.mapscoords[:,0]*experiment.base
-        w3 = experiment.mapscoords[:,1]*experiment.base
+        subs = []
+        RGBs = []
+        w1 = []
+        w2 = []
+        w3 = []
+        for ii in range(0,int(experiment.mapscoords.size/3)):
+            nset = experiment.mapscoords[ii,:]
+            subs += [get_subspace(nset)]
+            RGBs += [get_barycentric(nset)]
+            nset = list(nset)
+            nset.sort()
+            w2 += [nset[0]*experiment.base]
+            w3 += [nset[1]*experiment.base]
+            w1 += [nset[2]*experiment.base]
+
         G3 = experiment.G3
         eta3 = experiment.eta3
         J3 = experiment.J3
         phi3 = experiment.phi3
-        
+
         # Create a temporary DataFrame
         temp = pd.DataFrame({"w1 (rad/s)":w1, "w2 (rad/s)":w2, "w3 (rad/s)":w3, "G3 (Pa)":G3, "eta3 (Pa s3)":eta3,
-            "J3 (Pa-3)":J3, "phi3 (Pa-3 s-1)":phi3})
+            "J3 (Pa-3)":J3, "phi3 (Pa-3 s-1)":phi3, "Subspace":subs, "[R,G,B]":RGBs})
 
         # Append to main DataFrame
         df = df.append(temp, ignore_index=True)
 
     # Write to CSV
-    df.to_csv("output.csv", index=False)
+    df.to_csv(MAPS_folder + "/output.csv", index=False)
 
 def make_experiments(data, control='strain'):
     """

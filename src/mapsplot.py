@@ -360,22 +360,6 @@ class MAPSFigure():
             self.bodearg_model = (fig2,ax2)
             self.nyquist_model = (fig3,ax3)
 
-def get_barycentric(nset):
-    # Calculate the barycentric coordinates from the associated frequency set
-    rv = np.array([0,0,1.0])
-    gv = np.array([0,1./2.,1./2])
-    bv = np.array([1./3.,1./3.,1./3.])
-    A = np.linalg.norm(np.cross(gv-rv,bv-rv))
-
-    # Calculate the barycentric coords for each point via cross products
-    coord = np.sort(np.abs(nset))
-    coord = coord.astype(float)/np.sum(coord)
-    R = np.linalg.norm(np.cross(coord-gv, bv-gv))/A
-    G = np.linalg.norm(np.cross(coord-rv, bv-rv))/A
-    B = np.linalg.norm(np.cross(coord-rv, gv-rv))/A
-
-    return [R,G,B]
-
 def make_figures(experiments, mapsfun='eta', verbose=1, symbols=False):
     """
     Make figure objects from the experiment objects.

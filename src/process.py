@@ -513,6 +513,38 @@ def get_maps_coords(hset):
     # Find the unique points
     return np.array(sums), np.array(coordinates)
 
+def get_barycentric(nset):
+    # Calculate the barycentric coordinates from the associated frequency set
+    rv = np.array([0,0,1.0])
+    gv = np.array([0,1./2.,1./2])
+    bv = np.array([1./3.,1./3.,1./3.])
+    A = np.linalg.norm(np.cross(gv-rv,bv-rv))
+
+    # Calculate the barycentric coords for each point via cross products
+    coord = np.sort(np.abs(nset))
+    coord = coord.astype(float)/np.sum(coord)
+    R = np.linalg.norm(np.cross(coord-gv, bv-gv))/A
+    G = np.linalg.norm(np.cross(coord-rv, bv-rv))/A
+    B = np.linalg.norm(np.cross(coord-rv, gv-rv))/A
+
+    return [R,G,B]
+
+def get_subspace(nset):
+    # Determine the MAPS subspace associated with a particular coordinate
+    nset = list(nset)
+    nset.sort()
+
+    # Check if w2 is positive
+    if nset[0] > 0:
+        return "A"
+    else:
+        # Check how w2 compares to w3 and w1
+        if -nset[0] < nset[1]:
+            return "B"
+        elif -nset[0] < nset[2]:
+            return "C"
+        else:
+            return "D"
 
 def G_to_eta(G, w0, nset):
     """
