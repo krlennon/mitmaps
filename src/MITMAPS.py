@@ -43,11 +43,11 @@ MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
 MAPS_tones = [[5,6,9],[1,4,16]] # Input tone sets for MAPS signals
 MAPS_freqs = [1.28,0.64,0.32,0.16] # Fundamental frequencies in the MAPS sweeps
 sort_order = "amplitude" # Outer sorted variable ("amplitude" or "frequency")
-plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
+plot_var = "eta" # MAPS response function to plot ("G", "eta", "J", or "phi")
 
 # Constitutive models
 full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
-maps_models = [crm_J3] # MAPS model to plot (specific to MAPS response function)
+maps_models = [crm_eta3] # MAPS model to plot (specific to MAPS response function)
 extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options

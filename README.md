@@ -88,7 +88,9 @@ maps_models = [crm_eta3]
 extra_params = []
 
 # Additional options
+symbols = True
 plotLR = False
+plotMAPSLR = False
 gapLoading = False
 outputTable = False
 tssComp = False
