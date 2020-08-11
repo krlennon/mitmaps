@@ -80,7 +80,7 @@ class MAPSFigure():
             else:
                 self.D[self.barylabels[i]] += [[data[i], w0*self.norms[i], variances[i]]]
 
-    def plot_data(self, verbose=1):
+    def plot_data(self, verbose=1, symbols=False):
         """
         Plot the data for the current figure.
         """
@@ -96,9 +96,19 @@ class MAPSFigure():
         fig2, ax2 = plt.subplots(2,m)
         fig3, ax3 = plt.subplots(2,m)
 
+        # Determine the marker symbols
+        if symbols:
+            markers = ['o','s','^','*','P','X','d','v','<','>','p']
+            fills = ["full","none"]
+            mstyle = [markers,fills]
+        else:
+            markers = ['o']*11
+            fills = ["full"]*2
+            mstyle = [markers,fills]
+
         # Build the plots and save
         self.make_plots((fig1,ax1), (fig2,ax2), (fig3,ax3),
-                self.A, self.B, self.C, self.D, m)
+                self.A, self.B, self.C, self.D, m, True, 'dashed', mstyle)
         if verbose == 1:
             plt.show()
         elif verbose == 2:
@@ -111,7 +121,7 @@ class MAPSFigure():
         self.bodearg = (fig2,ax2)
         self.nyquist = (fig3,ax3)
 
-    def make_plots(self, bodemag, bodearg, nyquist, A, B, C, D, m, mark=True, line='dashed'):
+    def make_plots(self, bodemag, bodearg, nyquist, A, B, C, D, m, mark=True, line='dashed', mstyle=[None]*2):
         """
         Create plots given data.
         """
@@ -123,9 +133,11 @@ class MAPSFigure():
         fig3, ax3 = nyquist
         fig3.suptitle("Nyquist Plot")
 
+        # Define marker and fill styles
+        markers = mstyle[0]
+        fills = mstyle[1]
+
         # For each triangle, plot all isobarycentric curves
-        markers = ['o','s','^','*','P','X','d','v','<','>','p']
-        fills = ["full","none"]
         wmin = 10000.0
         wmax = 0.0
         magmin = 1E10
@@ -133,10 +145,10 @@ class MAPSFigure():
         for i in range(0, len(self.barysets)):
             # Determine the marker style and fill
             if mark:
-                mstyle = markers[int(np.floor(i/2))]
+                symbol = markers[int(np.floor(i/2))]
                 fstyle = fills[int(np.mod(i,2))]
             else:
-                mstyle = "None"
+                symbol = "None"
                 fstyle = "none"
 
             # Make the Bode plots and Nyquist diagram
@@ -169,7 +181,7 @@ class MAPSFigure():
 
                     # Plot the Nyquist diagram
                     ny_ax.plot(np.real(data[:,0]), np.imag(data[:,0]),
-                            color=self.barysets[i], marker=mstyle, fillstyle=fstyle, linestyle=line)
+                            color=self.barysets[i], marker=symbol, fillstyle=fstyle, linestyle=line)
 
                     # Plot error bars on the Bode plots (for experiments with mark = 'o')
                     if mark:
@@ -194,11 +206,11 @@ class MAPSFigure():
                         bm_ax.set_yscale('log',nonposy='clip')
                         bm_ax.errorbar(np.real(data[:,1]), mag,
                                 yerr=np.sqrt(abs_var), color=self.barysets[i],
-                                marker=mstyle, fillstyle=fstyle, linestyle=line)
+                                marker=symbol, fillstyle=fstyle, linestyle=line)
                         ba_ax.set_xscale('log',nonposx='clip')
                         ba_ax.errorbar(np.real(data[:,1]), arg*2/np.pi,
                                 yerr=np.sqrt(arg_var)*2/np.pi, color=self.barysets[i],
-                                marker=mstyle, fillstyle=fstyle, linestyle=line)
+                                marker=symbol, fillstyle=fstyle, linestyle=line)
 
                         # Get the maximum and minimum magnitudes
                         if np.min(mag) < magmin:
@@ -208,9 +220,9 @@ class MAPSFigure():
 
                     else:
                         bm_ax.loglog(np.real(data[:,1]), np.abs(data[:,0]),
-                                color=self.barysets[i], marker=mstyle, fillstyle=fstyle, linestyle=line)
+                                color=self.barysets[i], marker=symbol, fillstyle=fstyle, linestyle=line)
                         ba_ax.semilogx(np.real(data[:,1]), np.angle(data[:,0])*2/np.pi,
-                                color=self.barysets[i], marker=mstyle, fillstyle=fstyle, linestyle=line)
+                                color=self.barysets[i], marker=symbol, fillstyle=fstyle, linestyle=line)
 
 
 
@@ -364,7 +376,7 @@ def get_barycentric(nset):
 
     return [R,G,B]
 
-def make_figures(experiments, mapsfun='eta', verbose=1):
+def make_figures(experiments, mapsfun='eta', verbose=1, symbols=False):
     """
     Make figure objects from the experiment objects.
     """
@@ -399,7 +411,7 @@ def make_figures(experiments, mapsfun='eta', verbose=1):
             print('Error: No MAPS function called ' + mapsfun)
 
     for name in set(names):
-        figures[name].plot_data(verbose)
+        figures[name].plot_data(verbose,symbols)
 
     return figures
 

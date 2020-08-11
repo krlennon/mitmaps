@@ -51,6 +51,7 @@ maps_models = [crm_J3] # MAPS model to plot (specific to MAPS response function)
 extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
+symbols = True # Option to include unique symbols in addition to colors on Bode + Nyquist plots
 plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
 outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
@@ -182,7 +183,7 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
     # Arguments are the experiment array, the MAPS function to plot, and the verbosity (0 - don't display or save,
     # 1 - display, don't save, 2 - display and save)
     sys.stdout.write("\rPlotting MAPS data ...")
-    figures = make_figures(experiments, plot_var, verbose=0)
+    figures = make_figures(experiments, plot_var, verbose=0, symbols=symbols)
 
     # Plot the linear response from the experiments
     if plotLR:
