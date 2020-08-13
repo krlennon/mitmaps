@@ -122,7 +122,7 @@ class MAPSExperiment:
         ax1.set_xlim([0, 4*np.max(self.harmonics)*self.base])
         ax2.set_xlim([0, 4*np.max(self.harmonics)*self.base])
         fig1.suptitle("Input Fourier Transforms")
-        fig1.suptitle("Output Fourier Transforms")
+        fig2.suptitle("Output Fourier Transforms")
 
     def get_Xval(self, f):
         """
