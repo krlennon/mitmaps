@@ -46,3 +46,7 @@ Thumbs.db
 # pycache #
 ###########
 src/__pycache__/*
+
+# Data files #
+##############
+Data/*
