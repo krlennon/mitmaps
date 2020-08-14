@@ -52,11 +52,11 @@ extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
 symbols = True # Option to include unique symbols in addition to colors on Bode + Nyquist plots
-plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
+plotLR = False # Choose whether to plot the linear response (both complex modulus and complex compliance)
 plotMAPSLR = False # Choose whether to plot the linear response data coming from the MAPS experiments
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
-outputTable = True # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
-tssComp = False # Choose whether to run a TSS comparison
+outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
+tssComp = True # Choose whether to run a TSS comparison
 
 ###################################
 ## EDITS BELOW HERE ARE OPTIONAL ##
