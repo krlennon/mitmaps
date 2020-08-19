@@ -44,12 +44,13 @@ def set_configuration(control):
     w_col = 4 # The column (index-1) containing the angular frequency
     Gprime_col = 1 # The column (index-1) containing the storage modulus
     Gdoubprime_col = 2 # The column (index-1) containing the loss modulus
+    t_col_LR = 6 # The column (index-1) containing the step time
     w_units = 1 # Unit correction for angular frequency (assuming units of rad/s)
     #w_units = 2*np.pi <- example if units of angular frequency are 1/s (2\pi rad/s = 1/s)
     G_units = 1 # Unit correction for the moduli (assuming units of Pa)
     # G_units = 1000 <- example if units of the moduli are kPa (1000 Pa = 1 kPa)
 
-    configs = {"t_col":t_col, "stress_col":stress_col, "strain_col":strain_col, "t_units":t_units, "stress_units":stress_units, "strain_units":strain_units, "w_col":w_col, "Gprime_col":Gprime_col, "Gdoubprime_col":Gdoubprime_col, "w_units":w_units, "G_units":G_units}
+    configs = {"t_col":t_col, "stress_col":stress_col, "strain_col":strain_col, "t_units":t_units, "stress_units":stress_units, "strain_units":strain_units, "w_col":w_col, "Gprime_col":Gprime_col, "Gdoubprime_col":Gdoubprime_col, "t_col_LR":t_col_LR, "w_units":w_units, "G_units":G_units}
 
     return configs
 

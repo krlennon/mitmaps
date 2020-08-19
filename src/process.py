@@ -22,6 +22,7 @@ from itertools import permutations
 import matplotlib.pyplot as plt
 from scipy.optimize import fmin, curve_fit, least_squares
 from scipy.interpolate import interp1d as interp
+from scipy.special import gamma
 import sys
 
 class MAPSExperiment:
@@ -82,7 +83,7 @@ class MAPSExperiment:
             elif key == "ncycles":
                 t = 2*np.pi*value/self.base
                 for i in range(0,len(self.times)):
-                    N = int(round(self.times[i][-1]/T))
+                    N = self.times[i][-1]/T
                     n = len(self.times[i])
                     self.times[i] = self.times[i][int((N-value)*n/N):]
                     self.Xs[i] = self.Xs[i][int((N-value)*n/N):]
@@ -122,7 +123,7 @@ class MAPSExperiment:
         ax1.set_xlim([0, 4*np.max(self.harmonics)*self.base])
         ax2.set_xlim([0, 4*np.max(self.harmonics)*self.base])
         fig1.suptitle("Input Fourier Transforms")
-        fig1.suptitle("Output Fourier Transforms")
+        fig2.suptitle("Output Fourier Transforms")
 
     def get_Xval(self, f):
         """
@@ -184,8 +185,6 @@ class MAPSExperiment:
         if len(ind) + 1 > len(self.amplitudes[0]):
             for i in ind:
                 results[i] = None
-            return
-
         # Otherwise, continue operation
         nsets = [self.mapscoords[i] for i in ind]
 
@@ -583,12 +582,19 @@ def fitLR(data,lrmodel):
     """
     w = data[0]
     G = data[1]
+    t = data[2]
     Gr = np.real(G)
     Gi = np.imag(G)
 
-    # Fit to the Maxwell mode
-    obj = lambda p: np.sum(np.abs(lrmodel(w, p) - (Gr + 1j*Gi))**2)
-    popt,fopt,_,_,_ = fmin(func=obj, x0=[1,1,1], disp=False, full_output=1)
+    # Initialize parameters
+    if lrmodel == maxwellLR:
+        p0 = [1,1,1]
+    elif lrmodel == sgrLR_glass:
+        p0 = [1,1,1,1,1]
+
+    # Fit to the LR mode
+    obj = lambda p: np.sum(np.abs(lrmodel(w, p, t) - (Gr + 1j*Gi))**2)
+    popt,fopt,_,_,_ = fmin(func=obj, x0=p0, disp=False, full_output=1)
 
     # Calculate the uncertainty in the parameters
     eta0 = popt[0]
@@ -604,7 +610,7 @@ def fitLR(data,lrmodel):
 
     return popt, pvar
 
-def maxwellLR(w, p):
+def maxwellLR(w, p, t=None):
     """
     Define the Maxwell mode linear response function.
     """
@@ -613,6 +619,30 @@ def maxwellLR(w, p):
     etainf = p[2]
     G = (1j*eta0*w/(1 + 1j*lam*w) + 1j*w*etainf)
     return G
+
+def sgrLR_glass(w, p, t):
+    """
+    Define the linear response function for the SGR model in the glass phase.
+    """
+    k = p[0]
+    tau0 = p[1]
+    x = p[2]
+    c = p[3]
+    t0 = p[4]
+    G = k*(np.ones(np.shape(w)) - (1/gamma(x))*(1j*np.abs(w)*(t + t0*np.ones(np.shape(w))))**(x - 1)) + 1j*c*np.sqrt(np.abs(w))
+    G = np.real(G) + np.sign(w)*1j*np.imag(G)
+    return G
+
+def remove_highfreq(lrdata,c):
+    """
+    Remove the high frequency component in the linear response.
+    """
+    w = lrdata[0]
+    G = lrdata[1]
+    Gr = np.real(G)
+    Gi = np.imag(G) - c*np.sqrt(w)
+    lrdata[1] = Gr + 1j*Gi
+    return lrdata
 
 def interpolateLR(lrdata,k):
     """

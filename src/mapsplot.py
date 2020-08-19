@@ -414,7 +414,7 @@ def arg_formatter(val,pos):
     elif val == 2:
         return "$\pi$"
 
-def plot_linear_response(lrdata,lrmodel,marker='o',**kwargs):
+def plot_linear_response(lrdata,lrmodel,lrfit,marker='o',**kwargs):
     """
     Plot the linear response data and fit (G and J)
     """
@@ -425,6 +425,11 @@ def plot_linear_response(lrdata,lrmodel,marker='o',**kwargs):
     J = 1/G
     Jr = np.real(J)
     Ji = -np.imag(J)
+
+    # For the SGR Glass linear response, non-dimensionalize the frequency
+    if lrfit == "SGR Glass":
+        t = lrdata[2]
+        w = w*t
 
     # Plot the data
     try:

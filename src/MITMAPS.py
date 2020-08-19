@@ -32,6 +32,7 @@ import sys
 mode = "experimental"
 
 # Linear response
+#LR_file = "../Data/Bentonite/818_saos_003_5min.txt" # Path to file with linear response data (set to None to skip)
 LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
 LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
 
@@ -39,23 +40,24 @@ LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "interpn" with n =
 MAPS_control = "stress"
 
 # MAPS response
+#MAPS_folder = "../Data/Bentonite/MAPS Aug18" # Path to folder with MAPS data
 MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
 MAPS_tones = [[5,6,9],[1,4,16]] # Input tone sets for MAPS signals
 MAPS_freqs = [1.28,0.64,0.32,0.16] # Fundamental frequencies in the MAPS sweeps
 sort_order = "amplitude" # Outer sorted variable ("amplitude" or "frequency")
-plot_var = "eta" # MAPS response function to plot ("G", "eta", "J", or "phi")
+plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
 
 # Constitutive models
 full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
-maps_models = [crm_eta3] # MAPS model to plot (specific to MAPS response function)
+maps_models = [crm_J3] # MAPS model to plot (specific to MAPS response function)
 extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
 symbols = True # Option to include unique symbols in addition to colors on Bode + Nyquist plots
 plotLR = True # Choose whether to plot the linear response (both complex modulus and complex compliance)
-plotMAPSLR = False # Choose whether to plot the linear response data coming from the MAPS experiments
+plotMAPSLR = True # Choose whether to plot the linear response data coming from the MAPS experiments
 gapLoading = False # Choose whether to plot the gap loading limit analysis (only if LVE data + fit provided)
-outputTable = True # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
+outputTable = False # Choose whether to output the MAPS response functions values obtained by the experiments as a .csv file
 tssComp = False # Choose whether to run a TSS comparison
 
 ###################################
@@ -75,11 +77,20 @@ if LR_file != None:
         sys.stdout.write("\rFitting linear response data ...")
         popt,pvar = fitLR(LR_data,maxwellLR)
         eta0,lam,etainf = popt
-        LR_model = lambda w: maxwellLR(w,[eta0,lam,etainf])
+        LR_model = lambda w: maxwellLR(w,popt)
         sys.stdout.write("\rFitting linear response data ... done\n")
 
         # Set the model parameters to include the linear response parameters
         params = [eta0,lam,etainf] + extra_params
+
+    # Fit to the SGR model in the glass phase
+    elif LR_fit == "SGR Glass":
+        sys.stdout.write("\rFitting linear response data ...")
+        popt,pvar = fitLR(LR_data,sgrLR_glass)
+        k,tau0,x,c,t0 = [22,1,0.7,0.6,300]
+        LR_model = lambda wt: sgrLR_glass(wt,[k,tau0,x,0,t0],1)
+        LR_data = remove_highfreq(LR_data,c)
+        sys.stdout.write("\rFitting linear response data ... done\n")
 
     # Fit the LR data to kth order splines
     elif "interp" in LR_fit:
@@ -95,7 +106,7 @@ if LR_file != None:
 
     # Plot linear response data if specified
     if plotLR:
-        figG,axG,figJ,axJ = plot_linear_response(LR_data,LR_model)
+        figG,axG,figJ,axJ = plot_linear_response(LR_data,LR_model,LR_fit)
 
     # Plot gap loading limit analysis if specified
     if gapLoading:
@@ -188,7 +199,7 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
 
     # Plot the linear response from the MAPS experiments
     if plotMAPSLR:
-        plot_linear_response(LR_data_MAPS,LR_model,marker='x',axes=[figG,axG,figJ,axJ])
+        plot_linear_response(LR_data_MAPS,LR_model,LR_fit,marker='x',axes=[figG,axG,figJ,axJ])
 
 # If no data or full model are provided, initialize figures to plot only the analytical MAPS prediction
 else:
@@ -224,6 +235,8 @@ else:
 
         # Set overlap to 0
         overlap = 0
+
+experiments[0].plotft()
 
 # Plot a model prediction
 # Arguments are the MAPS model solution, model parameters, frequency range, verbosity

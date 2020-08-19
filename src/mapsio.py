@@ -186,6 +186,7 @@ def getLR(exp_data, exp_types):
     w_col = config["w_col"]
     Gprime_col = config["Gprime_col"]
     Gdoubprime_col = config["Gdoubprime_col"]
+    t_col = config["t_col_LR"]
     w_units = config["w_units"]
     G_units = config["G_units"]
 
@@ -196,9 +197,10 @@ def getLR(exp_data, exp_types):
             w = np.array([w_units*float(line[w_col - 1]) for line in num_data])
             Gr = np.array([G_units*float(line[Gprime_col - 1]) for line in num_data])
             Gi = np.array([G_units*float(line[Gdoubprime_col - 1]) for line in num_data])
+            t = np.array([float(line[t_col - 1]) for line in num_data])
             G = Gr + 1j*Gi
 
-            return [w,G]
+            return [w,G,t]
 
 def output_MAPS(experiments,MAPS_folder):
     """
