@@ -185,6 +185,8 @@ class MAPSExperiment:
         if len(ind) + 1 > len(self.amplitudes[0]):
             for i in ind:
                 results[i] = None
+            return
+
         # Otherwise, continue operation
         nsets = [self.mapscoords[i] for i in ind]
 
