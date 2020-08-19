@@ -666,8 +666,8 @@ def interpolateLR(lrdata,k):
         sys.exit("Error: Spline interpolant must be of degree 1 <= k <= 3")
 
     # Define interpolant funtions for the log of G' and G''
-    Gr_int = interp(np.log(wd),np.log(Gr),kind=order)
-    Gi_int = interp(np.log(wd),np.log(Gi),kind=order)
+    Gr_int = interp(np.log(wd),np.log(Gr),kind=order,bounds_error=False,fill_value="extrapolate")
+    Gi_int = interp(np.log(wd),np.log(Gi),kind=order,bounds_error=False,fill_value="extrapolate")
 
     # Combine into composite function
     G_int = lambda w: np.exp(Gr_int(np.log(np.abs(w)))) + 1j*np.sign(w)*np.exp(Gi_int(np.log(np.abs(w))))

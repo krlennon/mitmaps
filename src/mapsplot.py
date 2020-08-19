@@ -447,7 +447,7 @@ def plot_linear_response(lrdata,lrmodel,lrfit,marker='o',**kwargs):
     axJ.loglog(w,Ji,'b'+marker)
 
     # Plot the fitted model
-    w_v = np.logspace(np.log10(np.min(w)),np.log10(np.max(w)),100)
+    w_v = np.logspace(np.log10(np.min(w))-0.2,np.log10(np.max(w))+0.2,100)
     Gpred = lrmodel(w_v)
     Jpred = 1/Gpred
 

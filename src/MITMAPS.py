@@ -32,25 +32,25 @@ import sys
 mode = "experimental"
 
 # Linear response
-#LR_file = "../Data/Bentonite/818_saos_003_5min.txt" # Path to file with linear response data (set to None to skip)
-LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
-LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
+LR_file = "../Data/Bentonite/saos_01.txt" # Path to file with linear response data (set to None to skip)
+#LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
+LR_fit = "interp3" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
 
 # Experimental mode (either "stress" or "strain")
 MAPS_control = "stress"
 
 # MAPS response
-#MAPS_folder = "../Data/Bentonite/MAPS Aug18" # Path to folder with MAPS data
-MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
-MAPS_tones = [[5,6,9],[1,4,16]] # Input tone sets for MAPS signals
-MAPS_freqs = [1.28,0.64,0.32,0.16] # Fundamental frequencies in the MAPS sweeps
-sort_order = "amplitude" # Outer sorted variable ("amplitude" or "frequency")
+MAPS_folder = "../Data/Bentonite/MAPS Aug19" # Path to folder with MAPS data
+#MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
+MAPS_tones = [[5,6,9]] # Input tone sets for MAPS signals
+MAPS_freqs = [1.0,0.5,0.25] # Fundamental frequencies in the MAPS sweeps
+sort_order = "frequency" # Outer sorted variable ("amplitude" or "frequency")
 plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
 
 # Constitutive models
 full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
-maps_models = [crm_J3] # MAPS model to plot (specific to MAPS response function)
-extra_params = [] # Parameters in addition to those regressed from LVE response
+maps_models = [tss_J3] # MAPS model to plot (specific to MAPS response function)
+extra_params = [10] # Parameters in addition to those regressed from LVE response
 
 # Additional options
 symbols = True # Option to include unique symbols in addition to colors on Bode + Nyquist plots
@@ -244,7 +244,6 @@ experiments[0].plotft()
 # (1) or make a separate figure (0)
 
 # First set the minimum and maximum frequency to consider
-all_tones = [tone for tone_set in MAPS_tones for tone in tone_set]
 wmin = np.min(MAPS_freqs)
 wmax = np.max(MAPS_freqs)
 

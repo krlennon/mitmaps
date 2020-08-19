@@ -208,7 +208,7 @@ def crj_eta3(w1,w2,w3,params):
     eta0 = params[0]
     lambda1 = params[1]
     lambda2 = params[2]
-    
+
     # Calculate eta3 from the rational functions
     Omega1 = f1(w1,w2,w3,lambda1,lambda2,0,0,0)
     Omega2 = f2(w1,w2,w3,lambda1,lambda2,0,0,0)
