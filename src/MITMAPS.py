@@ -32,25 +32,23 @@ import sys
 mode = "experimental"
 
 # Linear response
-LR_file = "../Data/Bentonite/saos_01.txt" # Path to file with linear response data (set to None to skip)
-#LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
-LR_fit = "interp3" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
+LR_file = "../Example Data/saos.txt" # Path to file with linear response data (set to None to skip)
+LR_fit = "Maxwell" # Fitting method for LR data ("Maxwell" or "interpn" with n = 1, 2, or 3)
 
 # Experimental mode (either "stress" or "strain")
 MAPS_control = "stress"
 
 # MAPS response
-MAPS_folder = "../Data/Bentonite/MAPS Aug19" # Path to folder with MAPS data
-#MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
-MAPS_tones = [[5,6,9]] # Input tone sets for MAPS signals
-MAPS_freqs = [1.0,0.5,0.25] # Fundamental frequencies in the MAPS sweeps
-sort_order = "frequency" # Outer sorted variable ("amplitude" or "frequency")
-plot_var = "J" # MAPS response function to plot ("G", "eta", "J", or "phi")
+MAPS_folder = "../Example Data/MAPS Data" # Path to folder with MAPS data
+MAPS_tones = [[5,6,9],[1,4,16]] # Input tone sets for MAPS signals
+MAPS_freqs = [1.28,0.64,0.32,0.16] # Fundamental frequencies in the MAPS sweeps
+sort_order = "amplitude" # Outer sorted variable ("amplitude" or "frequency")
+plot_var = "eta" # MAPS response function to plot ("G", "eta", "J", or "phi")
 
 # Constitutive models
 full_model = None # the constitutive model to simulate in "simulation" mode (set to None to plot only analytical MAPS solution)
-maps_models = [tss_J3] # MAPS model to plot (specific to MAPS response function)
-extra_params = [10] # Parameters in addition to those regressed from LVE response
+maps_models = [crm_eta3] # MAPS model to plot (specific to MAPS response function)
+extra_params = [] # Parameters in addition to those regressed from LVE response
 
 # Additional options
 symbols = True # Option to include unique symbols in addition to colors on Bode + Nyquist plots
@@ -151,7 +149,7 @@ if (mode == "experimental" and MAPS_folder != None) or (mode == "simulation" and
     G1 = []
     for experiment in experiments:
         # Preprocess the data
-        experiment.trim(ncycles=5)
+        experiment.window()
         experiment.mean_subtract()
 
         # Process the data
@@ -235,8 +233,6 @@ else:
 
         # Set overlap to 0
         overlap = 0
-
-experiments[0].plotft()
 
 # Plot a model prediction
 # Arguments are the MAPS model solution, model parameters, frequency range, verbosity

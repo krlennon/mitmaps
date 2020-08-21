@@ -59,35 +59,45 @@ class MAPSExperiment:
         """
         for arg in args:
             self.times += [arg[0]]
-            self.Ys += [arg[1]]
             self.Xs += [arg[2]]
+            self.Ys += [arg[1]]
 
-    def trim(self, **kwargs):
+    def window(self, center="end", ncycle=5, shape="square"):
         """
-        Trim the time series to remove transient features.
+        Specify a windowing function for the data.
         """
         # Determine the signal period
         T = 2*np.pi/self.base
 
-        for key, value in kwargs.items():
-            # If a number of burn-in cycles are specified
-            if key == "nburn":
-                for i in range(0,len(self.times)):
-                    N = int(round(self.times[i][-1]/T))
-                    n = len(self.times[i])
-                    self.times[i] = self.times[i][int(value*n/N):]
-                    self.Xs[i] = self.Xs[i][int(value*n/N):]
-                    self.Ys[i] = self.Ys[i][int(value*n/N):]
+        for i in range(0,len(self.times)):
+            N = self.times[i][-1]/T
+            if shape=="square":
+                # Compute the points per cycle
+                n = len(self.times[i])
+                ppc = n/N
 
-            # If a total number of cycles is specified (take from the end of the time series)
-            elif key == "ncycles":
-                t = 2*np.pi*value/self.base
-                for i in range(0,len(self.times)):
-                    N = self.times[i][-1]/T
-                    n = len(self.times[i])
-                    self.times[i] = self.times[i][int((N-value)*n/N):]
-                    self.Xs[i] = self.Xs[i][int((N-value)*n/N):]
-                    self.Ys[i] = self.Ys[i][int((N-value)*n/N):]
+                # Specifying a window at the end of the signal
+                if center=="end":
+                    self.times[i] = self.times[i][-int(ncycle*ppc):]
+                    self.Xs[i] = self.Xs[i][-int(ncycle*ppc):]
+                    self.Ys[i] = self.Ys[i][-int(ncycle*ppc):]
+
+                else:
+                    # Get the index for the center of the window
+                    ind_center = np.argmin(np.abs(self.times[i] - center))
+
+                    # Window the time, X, and Y
+                    self.times[i] = self.times[i][int(ind_center - ncycle*ppc/2):int(ind_center + ncycle*ppc/2)]
+                    self.Xs[i] = self.Xs[i][int(ind_center - ncycle*ppc/2):int(ind_center + ncycle*ppc/2)]
+                    self.Ys[i] = self.Ys[i][int(ind_center - ncycle*ppc/2):int(ind_center + ncycle*ppc/2)]
+
+            # Apply Gaussian window
+            elif shape=="gaussian":
+                if center=="end":
+                    center = np.sum(self.times[i])/len(self.times[i])
+                gaussian_window = np.sqrt(np.pi)*(N/ncycle)*np.exp(-np.pi*((self.times[i] - center)/(T*ncycle/2))**2)
+                self.Xs[i] = self.Xs[i]*gaussian_window
+                self.Ys[i] = self.Ys[i]*gaussian_window
 
     def mean_subtract(self):
         """
@@ -122,6 +132,13 @@ class MAPSExperiment:
 
         ax1.set_xlim([0, 4*np.max(self.harmonics)*self.base])
         ax2.set_xlim([0, 4*np.max(self.harmonics)*self.base])
+        ys = ax2.get_ylim()
+
+        # Plot lines for the triplet sums
+        for w in self.sums:
+            ax2.semilogy([self.base*w,self.base*w],ys,'r--')
+
+        ax2.set_ylim(ys)
         fig1.suptitle("Input Fourier Transforms")
         fig2.suptitle("Output Fourier Transforms")
 
